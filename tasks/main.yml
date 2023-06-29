@@ -1,0 +1,28 @@
+---
+
+- import_tasks:  systemconfig.yml
+  tags:
+    - inst-systemconfig
+    - inst-lamp
+
+- import_tasks: php.yml 
+  tags:
+    - inst-php
+    - inst-lamp
+
+- import_tasks: apache2server.yml
+  tags:
+    - inst-apache
+    - inst-lamp
+
+- import_tasks: mysql.yml
+  tags:
+    - inst-mysql
+    - inst-lamp
+
+- import_tasks: wp-cli.yml
+  tags:
+    - inst-wp-cli
+    - inst-lamp
+
+...

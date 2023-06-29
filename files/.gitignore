@@ -1,0 +1,5 @@
+#Ignore all SQL files
+*.sql
+
+#Ignore all .tar.gz BK
+*.tar.gz

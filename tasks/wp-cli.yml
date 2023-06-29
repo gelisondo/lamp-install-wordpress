@@ -1,0 +1,15 @@
+---
+# Instalacion de repositorios.
+
+- name: Descargamos wp-cli para administrar WP
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+    dest: /usr/local/bin/wp
+    owner: "{{ adminwpcli }}"
+    group: "www-data"
+    mode: '0750'
+
+- name: Instalar wordpress y crea la configuración inicial desde wp-cli
+  ansible.builtin.shell:
+    cmd: "cd /var/www/{{ http_host }} && wp --allow-root core install --url={{ http_fqdn }} --title={{ http_host }} --admin_user={{ wp_admin_user }} --admin_password={{ wp_admin_password }} --admin_email={{ wp_admin_email }}"
+  become: yes

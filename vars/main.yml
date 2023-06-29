@@ -1,0 +1,67 @@
+---
+
+
+#el nombre debe ser identico al archivo con su extensión.
+#http_host: "site-name"
+#http_fqdn: "www.site-name.example.com"
+#http_conf: "site-name.conf"
+
+
+
+#Configuracion de WordPress con Wp-cli
+#adminwpcli: tu usuario 
+#wp-admin-user: wpcli
+#wp-admin-password: wpcli
+#wp-admin-email: "info@wp-cli.org"
+
+http_port: "80"
+app_user: www-data
+
+apache2:
+  packages:
+    - apache2
+    - apache2-utils
+    - libapache2-mod-php7.4
+    - python3-certbot-apache
+    - certbot
+
+# vars file for php7.4
+php:
+  packages:
+    - php7.4
+    - php7.4-cli
+    - php7.4-common
+    - php7.4-gd
+    - php7.4-xml
+    - php7.4-xmlrpc
+    - php7.4-mbstring
+    - php7.4-opcache
+    - php7.4-intl
+    - php7.4-json
+    - php7.4-zip
+    - php7.4-curl
+ 
+
+# Vars file for MySql(server, client)
+mysql:
+  packages:
+    - mariadb-server
+    - mariadb-client
+    - php7.4-mysql
+    - python3-pymysql
+
+
+systemconfig:
+  packages:
+    - unzip
+    - p7zip-full
+    - git
+    - unattended-upgrades
+    - rsync
+    - screen
+    - net-tools
+    - vim
+    - ntp
+    - ntpdate
+    - fail2ban
+    - apticron

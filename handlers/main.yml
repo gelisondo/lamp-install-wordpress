@@ -1,0 +1,16 @@
+---
+# handlers file for apache2-role
+#- name: check apache2 configuration
+  #Lansa un comando en el servidor para verificar su configuración
+  # command: apachectl configtest
+  #Registra en una variables "result" su resultado
+  #register: result
+
+- name: restart apache2
+  service: name=apache2 state=restarted
+  become: yes
+
+  #Lansa un comando desde la shell
+  #shell: /etc/init.d/apache2 restart
+  #Verifica antes de realizar un restart, si la variables contiene un salida de tipo "success" se realiza el reinicio de apache si no es así, no se realiza. !!Magia
+  # when: result|Syntax OK

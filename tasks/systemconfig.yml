@@ -1,0 +1,17 @@
+---
+# tasks file for System packages
+- name: Update Cache
+  ansible.builtin.apt:
+    update_cache: yes
+    force_apt_get: yes
+    cache_valid_time: 3600
+
+- name: Update system
+  ansible.builtin.apt:
+    upgrade: dist
+    force_apt_get: yes
+
+
+- name: Install SystemConfig Packages
+  apt: pkg={{ item }} state=present
+  with_items: "{{ systemconfig.packages }}"

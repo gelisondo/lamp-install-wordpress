@@ -1,0 +1,21 @@
+---
+# Instalacion de repositorios.
+
+- name: Update Cache
+  ansible.builtin.apt:
+    update_cache: yes
+    force_apt_get: yes
+    cache_valid_time: 3600
+
+- name: Update system
+  ansible.builtin.apt:
+    upgrade: dist
+    force_apt_get: yes
+
+# tasks file for apache2-role
+- name: Install php7.4
+  apt: pkg={{ item }} state=present
+  #Que items? selecciona los paquetes de la carpeta vars/main.yml, donde se indica php7.4 y la sección de packages
+  with_items: "{{ php.packages }}"
+
+

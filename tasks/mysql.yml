@@ -1,0 +1,46 @@
+---
+
+# tasks file for MySQL
+- name: Install mysql
+  apt: pkg={{ item }} state=present
+  with_items: "{{ mysql.packages }}"
+
+- name: Asegurarse de que mysql esté corriendo y habilitado al inicio.
+  service: name=mysql state=started enabled=yes
+
+##1) Seteamos la clave de root
+- name: Set root password
+  mysql_user:
+    login_user: root
+    login_password: ""
+    user: root
+    password: "{{ mariadb_root_password }}"
+    host: localhost
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    check_implicit_admin: yes
+  become: yes
+
+
+##2) Creamos la DB
+- name: Creamos una nueva DB para WP.
+  community.mysql.mysql_db:
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    login_host: localhost
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: "{{ wp_mysql_db }}"
+    state: present
+  become: yes
+
+##3) Creamos El usuario y la DB le asignamos todos los privilegios.
+- name: Creamos usuario MySql y Atorgamos todos los privilegios sobre la DB para WP.
+  community.mysql.mysql_user:
+    login_user: root
+    login_password: "{{ mariadb_root_password }}"
+    login_host: localhost
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: "{{ wp_mysql_user }}"
+    password: "{{ wp_mysql_password }}"
+    priv: '{{ wp_mysql_db }}.*:ALL,GRANT'
+    state: present
+  become: yes

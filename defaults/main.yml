@@ -1,0 +1,20 @@
+---
+# defaults file for apache2-role
+# Default variables
+listen_port: 80
+root_directory: /var/www/
+web_user: www-data
+
+
+#Autigua variables, almacenada por si el metodo actual falla.
+#mariadb_root_password: probando1234
+
+#Variables MySQL
+# defaults file for mysql
+# Creamos Variables 
+#wp_mysql_db: dbestandarwp
+
+##Las Siguientes variables se recomiendan crearlas en el entorno del host, para la variables wp_mysql_password recomendamos usar vault.
+#wp_mysql_user: usuariowp
+#wp_mysql_password: xxxxx
+

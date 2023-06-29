@@ -1,0 +1,5 @@
+---
+- hosts: debianlamp
+  remote_user: systecadmin
+  roles:
+    - Install-LAM-Php-8.0-Migrar-WP
