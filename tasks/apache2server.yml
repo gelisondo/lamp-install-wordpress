@@ -16,25 +16,23 @@
     group: "{{ app_user }}"
     owner: "{{ app_user }}"
 
-- name: Cambiamos el nombre del directorio
+- name: Change the directory name
   ansible.builtin.shell:
     cmd: "mv /var/www/wordpress /var/www/{{ http_host }}"
 
-- name: Change permissions from /var/www/{{ http_host }}
-  file:
-    dest: "/var/www/{{ http_host }}"
-    owner: www-data
-    group: www-data    
-    recurse: true 
-    # supposed to set directories to 755 and files to 644
-    mode: u=rwX,g=rX,o=rX
+- name: Change the owner
+  command: chown -R "{{ app_user }}":"{{ app_user }}" /var/www/"{{ http_host }}" 
 
+- name: make dirs 0755
+  command: find /var/www/"{{ http_host }}" -type d ! -perm 0755 -exec chmod 0755 {} \;
+
+- name: make files 0644
+  command: find /var/www/"{{ http_host }}" -type f ! -perm 0644 -exec chmod 0644 {} \;
 
 - name: Copiamos el archivo de configuración wp-config-sample.php para ponerlo en producción 
   ansible.builtin.shell:
     cmd: "cp /var/www/{{ http_host }}/wp-config-sample.php /var/www/{{ http_host }}/wp-config.php"
 
-#Revisar las expreciones regulares, hay que hacer pruebas para ver si es posible reescribir correctamente la configuración!!!
 - name: Update Wordpress config file
   lineinfile:
     path: "/var/www/{{ http_host }}/wp-config.php"
