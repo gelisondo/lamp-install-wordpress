@@ -103,6 +103,8 @@ It is possible to use other tags to call specific tasks of the role, within each
   tags: inst-lamp
 ```
 
+## Note:
 
-Nota:
-- Descomentar la extension curl (extension=curl) del archivo /etc/php/7.4/apache2/php.ini , o agregarla al final.
+We will define this version as 1.0 to finalize the first version of all the code. In future changes let's think about following the flow of Debian/Ubuntu systems that don't define a root password.
+
+On the other hand we thought of uncommenting the curl extension (extension=curl) from the /etc/php/7.4/apache2/php.ini file, or adding it to the end.
