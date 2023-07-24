@@ -1,5 +1,12 @@
 # lamp-install-wp
 
+<p align="center">
+  <img width="600" src="https://giphy.com/embed/l378rbZpHzTwxnSmY" >
+ </p>
+
+
+<div style="width:100%;height:0;padding-bottom:100%;position:relative;"><iframe src="https://giphy.com/embed/l378rbZpHzTwxnSmY" width="100%" height="100%" style="position:absolute" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/gifs/love-animation-art-l378rbZpHzTwxnSmY">via GIPHY</a></p>
+
 It will install a LAMP environment suitable to the WordPress requirements. Configure the virtual hosts in Apache2 and create an exclusive database for wordpress, as well as the root of the website.
 
 This particular Role will leave the site operational without human intervention, as it uses wp-cli to complete the WordPress installation automatically.
