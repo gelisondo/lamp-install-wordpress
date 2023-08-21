@@ -6,7 +6,9 @@ It will install a LAMP environment suitable to the WordPress requirements. Confi
 This particular Role will leave the site operational without human intervention, as it uses wp-cli to complete the WordPress installation automatically.
 
 
-## These other apache variables are defined under the **vars/** directory of the same role.
+## These other apache variables
+
+You can defined that variables under the **vars/** directory of the same role. But i recommend to define this variables under the Ansible directories **host_vars**.
 
 ```
 http_host: "site-name"
@@ -21,9 +23,7 @@ We define the user with which the web-apps/web-site will be executed.
 app_user: www-data
 ```
 
-## The variables of the Apache is define under the Ansible directories **host_vars**
-
-The following variables are used by the apache.conf.j2 template
+The following variables are used by the apache.conf.j2 template.
 
 ```
  http_host: "site-name"
@@ -39,6 +39,7 @@ I recomment to use a file with the name **host_var/server-hostname/vars/10_LAMP_
  wp_mysql_db: "databasename"
  wp_mysql_user: "username"
 ```
+
 
 ## The variables of the wp-cli is define under the Ansible directories "host_vars"**
 
