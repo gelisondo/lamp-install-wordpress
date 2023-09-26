@@ -2,4 +2,12 @@
 *.sql
 
 #Ignore all .tar.gz BK
+*.tar
 *.tar.gz
+*.tar.bz2
+*.zip
+*.rar
+*.gz
+*.tgz
+*.bz2
+*.xz

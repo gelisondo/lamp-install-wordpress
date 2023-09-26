@@ -78,6 +78,7 @@ systemconfig:
   packages:
     - unzip
     - p7zip-full
+    - unrar
     - git
     - unattended-upgrades
     - rsync
