@@ -15,3 +15,6 @@
 - name: Install SystemConfig Packages
   apt: pkg={{ item }} state=present
   with_items: "{{ systemconfig.packages }}"
+  when: (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_release'] == "bulseye") or
+        (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_release'] == "bookworm") or
+        (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_release'] == "focal")

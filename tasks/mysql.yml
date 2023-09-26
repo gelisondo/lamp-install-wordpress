@@ -5,7 +5,8 @@
   apt: pkg={{ item }} state=present
   with_items: "{{ mysql.packages }}"
   when: (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_release'] == "bulseye") or
-        (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_release'] == "bookworm")
+        (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_release'] == "bookworm") or
+        (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_release'] == "focal")
 
 - name: Asegurarse de que mysql esté corriendo y habilitado al inicio.
   service: name=mysql state=started enabled=yes
