@@ -2,8 +2,16 @@
 # tasks file for apache2-role
 - name: Install apache2
   apt: pkg={{ item }} state=present
-  #Que items? selecciona los paquetes de la carpeta vars/main.yml, donde se indica apache2 y la sección de packages
-  with_items: "{{ apache2.packages }}"
+  with_items: "{{ apache2.packages.ubuntu.focal }}"
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_release == "focal"
+
+- name: Install apache2 on Debian BullSeye - BookWorm
+  apt: pkg={{ item }} state=present
+  with_items: "{{ apache2.packages.debian.bullseye_bookworm }}"
+  when: (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_release'] == "bulseye") or
+        (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_release'] == "bookworm")
 
 - name: Asegurarse de que apache2 esté corriendo y habilitado al inicio.
   service: name=apache2 state=started enabled=yes

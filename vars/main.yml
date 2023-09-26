@@ -1,53 +1,76 @@
 ---
 
+#Define php version: 7.4 , 8.2
 
-#el nombre debe ser identico al archivo con su extensión.
-#http_host: "site-name"
-#http_fqdn: "www.site-name.example.com"
-#http_conf: "site-name.conf"
+##It is necessary to publish the following variables in a file under the host_vars directory, ex: 10_lamp.yml
+# bk_raiz: "site-name.tar.gz"
+# http_host: "site-name"
+# http_fqdn: "www.site-name.example.com"
+# http_conf: "site-name.conf"
 
-
-
-#Configuracion de WordPress con Wp-cli
-#adminwpcli: tu usuario 
-#wp-admin-user: wpcli
-#wp-admin-password: wpcli
-#wp-admin-email: "info@wp-cli.org"
+##If you need to override the following 2 variables, the first thing to do is comment them out and post them to a file under the host_vars directory
 
 http_port: "80"
 app_user: www-data
+adminwpcli: www-data
+
 
 apache2:
   packages:
-    - apache2
-    - apache2-utils
-    - libapache2-mod-php7.4
-    - python3-certbot-apache
-    - certbot
+    debian:
+      bullseye_bookworm:
+        - apache2
+        - apache2-utils
+        - python3-certbot-apache
+        - certbot
+    ubuntu:
+      focal:
+        - apache2
+        - apache2-utils
+        - python3-certbot-apache
+        - certbot
 
-# vars file for php7.4
+# vars file for php7.4 - When the so is Debian bulseye or ubuntu focal.
 php:
   packages:
-    - php7.4
-    - php7.4-cli
-    - php7.4-common
-    - php7.4-gd
-    - php7.4-xml
-    - php7.4-xmlrpc
-    - php7.4-mbstring
-    - php7.4-opcache
-    - php7.4-intl
-    - php7.4-json
-    - php7.4-zip
-    - php7.4-curl
- 
+    php74:
+      - php7.4
+      - php7.4-cli
+      - php7.4-common
+      - php7.4-gd
+      - php7.4-xml
+      - php7.4-xmlrpc
+      - php7.4-mbstring
+      - php7.4-opcache
+      - php7.4-intl
+      - php7.4-json
+      - php7.4-zip
+      - php7.4-curl
+      - php7.4-imagick #Verificar si el nombre del paquete está bien
+      - libapache2-mod-php7.4
+      - php7.4-mysql
+    php82:
+      - php8.2
+      - php8.2-cli
+      - php8.2-common
+      - php8.2-gd
+      - php8.2-xml
+      - php8.2-xmlrpc
+      - php8.2-mbstring
+      - php8.2-opcache
+      - php8.2-intl
+      - php8.2-zip
+      - php8.2-curl
+      - php8.2-imagick
+      - libapache2-mod-php8.2
+      - php8.2-mysql
+
 
 # Vars file for MySql(server, client)
 mysql:
   packages:
     - mariadb-server
     - mariadb-client
-    - php7.4-mysql
     - python3-pymysql
 
 
@@ -65,3 +88,4 @@ systemconfig:
     - ntpdate
     - fail2ban
     - apticron
+ 
