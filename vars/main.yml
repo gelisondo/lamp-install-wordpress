@@ -3,7 +3,6 @@
 #Define php version: 7.4 , 8.2
 
 ##It is necessary to publish the following variables in a file under the host_vars directory, ex: 10_lamp.yml
-# bk_raiz: "site-name.tar.gz"
 # http_host: "site-name"
 # http_fqdn: "www.site-name.example.com"
 # http_conf: "site-name.conf"
