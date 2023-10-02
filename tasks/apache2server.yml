@@ -11,8 +11,7 @@
   apt: pkg={{ item }} state=present
   with_items: "{{ apache2.packages.debian.bullseye_bookworm }}"
   when: (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_release'] == "bulseye") or
-        (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_release'] == "bookworm") or
-        (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_release'] == "focal")
+        (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_release'] == "bookworm")
 
 - name: Asegurarse de que apache2 esté corriendo y habilitado al inicio.
   service: name=apache2 state=started enabled=yes
@@ -71,5 +70,3 @@
 
   notify:
     - restart apache2
-
-  tags: inst-apache
