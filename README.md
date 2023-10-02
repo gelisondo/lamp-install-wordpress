@@ -91,18 +91,10 @@ It is possible to use other tags to call specific tasks of the role, within each
   hosts: fqdn-host
   remote_user: remote-user
   become: yes
+  gather_facts: yes
 
-  roles:
-    - inst-systemconfig
-    - inst-apache
-    - inst-php
-    - inst-mysql
-    - inst-wp-cli
-    - inst-lamp
-    
-
-  #Es 
-  tags: inst-lamp
+  tags:
+    - lamp-install-wp
 ```
 
 ## Note:
