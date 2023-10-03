@@ -9,7 +9,8 @@
 # http_conf: "site-name.conf"
 
 ## MariaDB/MySql Vars:
-# mariadb_root_password: "{{ vault_mariadb_root_password }}"
+# After version 1.1.0 we will not set the root password, generally new systems do not set these passwords. For that reason we decided to follow the design flow of the operating system.
+# 
 # wp_mysql_db: "ExampleNameDb"
 # wp_mysql_user: "ExampleUser"
 

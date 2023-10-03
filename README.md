@@ -56,12 +56,10 @@ wp_admin_email: "email-example@example.io"
 
 All these variables are necessary for the role to finish configuring the site and leaving it in production.
 
-## Set root password, encrypted with Vault
-define vault file, **host_var/server-hostname/vault/main.yml**
+## Not set the root password:
 
-```
-mariadb_root_password: "{{ vault_mariadb_root_password }}"
-```
+  After version 1.1.0 we will not set the root password, generally new systems do not set these passwords. For 
+that reason we decided to follow the design flow of the operating system.
 
 ## Define database password tu use wordpress, encrypted with vault
 
