@@ -18,9 +18,10 @@
     login_password: ""
     login_host: localhost
     login_unix_socket: /var/run/mysqld/mysqld.sock
-    name: "{{ wp_mysql_db }}"
+    name: "{{ item.value.wp_mysql_db }}"
     state: present
   become: yes
+  loop: "{{ sites_config|dict2items }}"
 
 ##2) Creamos El usuario y la DB le asignamos todos los privilegios.
 - name: Creamos usuario MySql y Atorgamos todos los privilegios sobre la DB para WP.
@@ -29,8 +30,9 @@
     login_password: ""
     login_host: localhost
     login_unix_socket: /var/run/mysqld/mysqld.sock
-    name: "{{ wp_mysql_user }}"
-    password: "{{ wp_mysql_password }}"
-    priv: '{{ wp_mysql_db }}.*:ALL,GRANT'
+    name: "{{ item.value.wp_mysql_user }}"
+    password: "{{ item.value.wp_mysql_password }}"
+    priv: '{{ item.value.wp_mysql_db }}.*:ALL,GRANT'
     state: present
   become: yes
+  loop: "{{ sites_config|dict2items }}"

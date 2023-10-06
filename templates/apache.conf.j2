@@ -1,16 +1,16 @@
-<VirtualHost *:{{ http_port }}>
+<VirtualHost *:{{ item.value.http_port }}>
 
-   ServerAdmin {{ server_admin }}
-   ServerName {{ http_fqdn }}
-   ServerAlias {{ http_fqdn }}
-   DocumentRoot /var/www/{{ http_host }}
+   ServerAdmin {{ item.value.server_admin }}
+   ServerName {{ item.value.http_fqdn }}
+   ServerAlias {{ item.value.http_fqdn }}
+   DocumentRoot /var/www/{{ item.value.http_host }}
 
    <Directory />
       Options FollowSymLinks
       AllowOverride None
    </Directory>
 
-   <Directory /var/www/{{ http_host }}>
+   <Directory /var/www/{{ item.value.http_host }}>
       Options Indexes FollowSymLinks MultiViews
       AllowOverride All
       Order allow,deny
