@@ -19,54 +19,108 @@
 - name: Descargamos y Descomprimimos la ultima version de wordpress para crear la raiz.
   ansible.builtin.unarchive:
     src: https://wordpress.org/latest.tar.gz
-    dest: /var/www/
+    dest: /tmp
     remote_src: yes
     group: "{{ app_user }}"
     owner: "{{ app_user }}"
+  
+- name: Copy WordPress latest Version to new Site
+  ansible.builtin.copy:
+    src: /tmp/wordpress
+    dest: "/var/www/{{ item.value.http_host }}"
+    directory_mode:
+  loop: "{{ sites_config|dict2items }}"
 
-- name: Change the directory name
-  ansible.builtin.shell:
-    cmd: "mv /var/www/wordpress /var/www/{{ http_host }}"
+# - name: Change the directory name
+#   ansible.builtin.shell:
+#     cmd: "mv /var/www/wordpress /var/www/{{ http_host }}"
+#--
 
-- name: Change the owner
-  command: chown -R "{{ app_user }}":"{{ app_user }}" /var/www/"{{ http_host }}" 
+- name: Change the owner an permisions
+  ansible.builtin.file:
+    dest: "/var/www/{{ item.value.http_host }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    recurse: true
+    #Set directories to 755 and files to 644
+    mode: u=rwX,g=rX,o=rX
+  loop: "{{ sites_config|dict2items }}"
 
-- name: make dirs 0755
-  command: find /var/www/"{{ http_host }}" -type d ! -perm 0755 -exec chmod 0755 {} \;
+# - name: Change the owner
+#   command: chown -R "{{ app_user }}":"{{ app_user }}" /var/www/"{{ http_host }}" 
 
-- name: make files 0644
-  command: find /var/www/"{{ http_host }}" -type f ! -perm 0644 -exec chmod 0644 {} \;
+# - name: make dirs 0755
+#   command: find /var/www/"{{ http_host }}" -type d ! -perm 0755 -exec chmod 0755 {} \;
 
-- name: Copiamos el archivo de configuración wp-config-sample.php para ponerlo en producción 
-  ansible.builtin.shell:
-    cmd: "cp /var/www/{{ http_host }}/wp-config-sample.php /var/www/{{ http_host }}/wp-config.php"
+# - name: make files 0644
+#   command: find /var/www/"{{ http_host }}" -type f ! -perm 0644 -exec chmod 0644 {} \;
+#--
 
-- name: Update Wordpress config file
+- name: Copy confing file wp-config-sample.php to production
+  ansible.builtin.copy:
+    src: "/var/www/{{ item.value.http_host }}/wp-config-sample.php"
+    dest: "/var/www/{{ item.value.http_host }}/wp-config.php"
+  loop: "{{ sites_config|dict2items }}"
+
+# - name: Copiamos el archivo de configuración wp-config-sample.php para ponerlo en producción 
+#   ansible.builtin.shell:
+#     cmd: "cp /var/www/{{ http_host }}/wp-config-sample.php /var/www/{{ http_host }}/wp-config.php"
+#--
+
+- name: Update Wordpress config file with value wp_mysql_db
   lineinfile:
-    path: "/var/www/{{ http_host }}/wp-config.php"
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-  with_items:
-    - {'regexp': "define\\( 'DB_NAME', '(.)+' \\);", 'line': "define( 'DB_NAME', '{{ wp_mysql_db }}' );"}
-    - {'regexp': "define\\( 'DB_USER', '(.)+' \\);", 'line': "define( 'DB_USER', '{{ wp_mysql_user }}' );"}
-    - {'regexp': "define\\( 'DB_PASSWORD', '(.)+' \\);", 'line': "define( 'DB_PASSWORD', '{{ wp_mysql_password }}' );"}
+    path: "/var/www/{{ item.value.http_host }}/wp-config.php"
+    regexp: "define\\( 'DB_NAME', '(.)+' \\);"
+    line: "define( 'DB_NAME', '{{ item.value.wp_mysql_db }}' );"
+  loop: "{{ sites_config|dict2items }}"
 
+- name: Update Wordpress config file with value wp_mysql_user
+  lineinfile:
+    path: "/var/www/{{ item.value.http_host }}/wp-config.php"
+    regexp: "define\\( 'DB_USER', '(.)+' \\);"
+    line: "define( 'DB_USER', '{{ item.value.wp_mysql_user }}' );"
+  loop: "{{ sites_config|dict2items }}"
+
+- name: Update Wordpress config file with value wp_mysql_password
+  lineinfile:
+    path: "/var/www/{{ item.value.http_host }}/wp-config.php"
+    regexp: "define\\( 'DB_PASSWORD', '(.)+' \\);"
+    line: "define( 'DB_PASSWORD', '{{ item.value.wp_mysql_password }}' );"
+  loop: "{{ sites_config|dict2items }}"
+
+
+# - name: Update Wordpress config file
+#   lineinfile:
+#     path: "/var/www/{{ http_host }}/wp-config.php"
+#     regexp: "{{ item.regexp }}"
+#     line: "{{ item.line }}"
+#   with_items:
+#     - {'regexp': "define\\( 'DB_NAME', '(.)+' \\);", 'line': "define( 'DB_NAME', '{{ wp_mysql_db }}' );"}
+#     - {'regexp': "define\\( 'DB_USER', '(.)+' \\);", 'line': "define( 'DB_USER', '{{ wp_mysql_user }}' );"}
+#     - {'regexp': "define\\( 'DB_PASSWORD', '(.)+' \\);", 'line': "define( 'DB_PASSWORD', '{{ wp_mysql_password }}' );"}
+
+
+## Nota: Debemos ver como es posible acceder a las variables del template cuando se llama desde un loop
+## Probablemente sustituimos la variable {{ server_admin }},etc, por {{ item.value.server_admin }} probar
 
 - name: Agregamos VirtualHost
   #Agrega los virtual Host Necesarios bansandoce en el template template/apache.conf.j2 y lo deja en /etc/apache2/site-available/default
   template:
     src=apache.conf.j2
-    dest="/etc/apache2/sites-available/{{ http_conf }}"
+    dest="/etc/apache2/sites-available/{{ item.value.http_conf }}"
     owner=root
     mode=0644
+  loop: "{{ sites_config|dict2items }}"
 
 - name: Habilitamos el nuevo sitio
   ansible.builtin.shell:
-    cmd: "/usr/sbin/a2ensite {{ http_conf }}"
+    cmd: "/usr/sbin/a2ensite {{ item.value.http_conf }}"
+  loop: "{{ sites_config|dict2items }}"
 
 - name: Deshabilitamos el sitio default
   ansible.builtin.shell:
     cmd: "/usr/sbin/a2dissite 000-default.conf"
+  loop: "{{ sites_config|dict2items }}"
 
   notify:
     - restart apache2
