@@ -30,12 +30,9 @@
     dest: "/var/www/{{ item.value.http_host }}"
     directory_mode:
     remote_src: yes
+    force: no # Si el sitio ya existe, no sobre escribe los archivos - !! hevita borrar sitios operativos.
   loop: "{{ sites_config|dict2items }}"
 
-# - name: Change the directory name
-#   ansible.builtin.shell:
-#     cmd: "mv /var/www/wordpress /var/www/{{ http_host }}"
-#--
 
 - name: Change the owner an permisions
   ansible.builtin.file:
@@ -48,28 +45,16 @@
     mode: u=rwX,g=rX,o=rX
   loop: "{{ sites_config|dict2items }}"
 
-# - name: Change the owner
-#   command: chown -R "{{ app_user }}":"{{ app_user }}" /var/www/"{{ http_host }}" 
-
-# - name: make dirs 0755
-#   command: find /var/www/"{{ http_host }}" -type d ! -perm 0755 -exec chmod 0755 {} \;
-
-# - name: make files 0644
-#   command: find /var/www/"{{ http_host }}" -type f ! -perm 0644 -exec chmod 0644 {} \;
-#--
 
 - name: Copy confing file wp-config-sample.php to production
   ansible.builtin.copy:
     src: "/var/www/{{ item.value.http_host }}/wp-config-sample.php"
     dest: "/var/www/{{ item.value.http_host }}/wp-config.php"
     remote_src: yes
+    force: no # Si el archivo ya existe, no lo sobre escribe !! hevita borrar la configuración existente
   loop: "{{ sites_config|dict2items }}"
 
-# - name: Copiamos el archivo de configuración wp-config-sample.php para ponerlo en producción 
-#   ansible.builtin.shell:
-#     cmd: "cp /var/www/{{ http_host }}/wp-config-sample.php /var/www/{{ http_host }}/wp-config.php"
-#--
-
+# Esta sección si sobre escribe el contenido, pero si las variables no cambian no hay problema que los sitios se rompan.
 - name: Update Wordpress config file with value wp_mysql_db
   ansible.builtin.lineinfile:
     path: "/var/www/{{ item.value.http_host }}/wp-config.php"
@@ -91,20 +76,6 @@
     line: "define( 'DB_PASSWORD', '{{ item.value.wp_mysql_password }}' );"
   loop: "{{ sites_config|dict2items }}"
 
-
-# - name: Update Wordpress config file
-#   lineinfile:
-#     path: "/var/www/{{ http_host }}/wp-config.php"
-#     regexp: "{{ item.regexp }}"
-#     line: "{{ item.line }}"
-#   with_items:
-#     - {'regexp': "define\\( 'DB_NAME', '(.)+' \\);", 'line': "define( 'DB_NAME', '{{ wp_mysql_db }}' );"}
-#     - {'regexp': "define\\( 'DB_USER', '(.)+' \\);", 'line': "define( 'DB_USER', '{{ wp_mysql_user }}' );"}
-#     - {'regexp': "define\\( 'DB_PASSWORD', '(.)+' \\);", 'line': "define( 'DB_PASSWORD', '{{ wp_mysql_password }}' );"}
-
-
-## Nota: Debemos ver como es posible acceder a las variables del template cuando se llama desde un loop
-## Probablemente sustituimos la variable {{ server_admin }},etc, por {{ item.value.server_admin }} probar
 
 - name: Agregamos VirtualHost
   #Agrega los virtual Host Necesarios bansandoce en el template template/apache.conf.j2 y lo deja en /etc/apache2/site-available/default
