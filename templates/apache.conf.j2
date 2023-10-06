@@ -1,6 +1,6 @@
-<VirtualHost *:{{ item.value.http_port }}>
+<VirtualHost *:{{ http_port }}>
 
-   ServerAdmin {{ item.value.server_admin }}
+   ServerAdmin {{ server_admin }}
    ServerName {{ item.value.http_fqdn }}
    ServerAlias {{ item.value.http_fqdn }}
    DocumentRoot /var/www/{{ item.value.http_host }}

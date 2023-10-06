@@ -26,9 +26,10 @@
   
 - name: Copy WordPress latest Version to new Site
   ansible.builtin.copy:
-    src: /tmp/wordpress
+    src: /tmp/wordpress/  # note the '/' <-- la barra al final es para copiar solo el contenido ;) !!!
     dest: "/var/www/{{ item.value.http_host }}"
     directory_mode:
+    remote_src: yes
   loop: "{{ sites_config|dict2items }}"
 
 # - name: Change the directory name
@@ -39,9 +40,10 @@
 - name: Change the owner an permisions
   ansible.builtin.file:
     dest: "/var/www/{{ item.value.http_host }}"
+    state: directory
+    recurse: true
     owner: "{{ app_user }}"
     group: "{{ app_user }}"
-    recurse: true
     #Set directories to 755 and files to 644
     mode: u=rwX,g=rX,o=rX
   loop: "{{ sites_config|dict2items }}"
@@ -60,6 +62,7 @@
   ansible.builtin.copy:
     src: "/var/www/{{ item.value.http_host }}/wp-config-sample.php"
     dest: "/var/www/{{ item.value.http_host }}/wp-config.php"
+    remote_src: yes
   loop: "{{ sites_config|dict2items }}"
 
 # - name: Copiamos el archivo de configuración wp-config-sample.php para ponerlo en producción 
@@ -68,21 +71,21 @@
 #--
 
 - name: Update Wordpress config file with value wp_mysql_db
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "/var/www/{{ item.value.http_host }}/wp-config.php"
     regexp: "define\\( 'DB_NAME', '(.)+' \\);"
     line: "define( 'DB_NAME', '{{ item.value.wp_mysql_db }}' );"
   loop: "{{ sites_config|dict2items }}"
 
 - name: Update Wordpress config file with value wp_mysql_user
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "/var/www/{{ item.value.http_host }}/wp-config.php"
     regexp: "define\\( 'DB_USER', '(.)+' \\);"
     line: "define( 'DB_USER', '{{ item.value.wp_mysql_user }}' );"
   loop: "{{ sites_config|dict2items }}"
 
 - name: Update Wordpress config file with value wp_mysql_password
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "/var/www/{{ item.value.http_host }}/wp-config.php"
     regexp: "define\\( 'DB_PASSWORD', '(.)+' \\);"
     line: "define( 'DB_PASSWORD', '{{ item.value.wp_mysql_password }}' );"
@@ -120,8 +123,7 @@
 - name: Deshabilitamos el sitio default
   ansible.builtin.shell:
     cmd: "/usr/sbin/a2dissite 000-default.conf"
-  loop: "{{ sites_config|dict2items }}"
-
+  
   notify:
     - restart apache2
 
