@@ -7,7 +7,7 @@ This particular Role will leave the site operational without human intervention,
 Lists of differences in role versions:
 
 - v1.0    In this version Install WP without human intervention post install the CMS.
-- v1.1.0  In this we will not set the password for root user. By default the new systems are configured like this.
+- v1.1.0  In this version we will not set the password for root user. By default the new systems are configured like this.
 - v1.2.0  In this version you will be able to define several sites that you need to install.
 
 ## Listas de variables:
