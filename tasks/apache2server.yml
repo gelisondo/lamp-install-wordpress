@@ -31,7 +31,7 @@
     directory_mode:
     remote_src: yes
     force: no # Si el sitio ya existe, no sobre escribe los archivos - !! hevita borrar sitios operativos.
-  loop: "{{ sites_config|dict2items }}"
+  loop: "{{ sites_config_install|dict2items }}"
 
 
 - name: Change the owner an permisions
@@ -43,7 +43,7 @@
     group: "{{ app_user }}"
     #Set directories to 755 and files to 644
     mode: u=rwX,g=rX,o=rX
-  loop: "{{ sites_config|dict2items }}"
+  loop: "{{ sites_config_install|dict2items }}"
 
 
 - name: Copy confing file wp-config-sample.php to production
@@ -52,7 +52,7 @@
     dest: "/var/www/{{ item.value.http_host }}/wp-config.php"
     remote_src: yes
     force: no # Si el archivo ya existe, no lo sobre escribe !! hevita borrar la configuración existente
-  loop: "{{ sites_config|dict2items }}"
+  loop: "{{ sites_config_install|dict2items }}"
 
 # Esta sección si sobre escribe el contenido, pero si las variables no cambian no hay problema que los sitios se rompan.
 - name: Update Wordpress config file with value wp_mysql_db
@@ -60,21 +60,21 @@
     path: "/var/www/{{ item.value.http_host }}/wp-config.php"
     regexp: "define\\( 'DB_NAME', '(.)+' \\);"
     line: "define( 'DB_NAME', '{{ item.value.wp_mysql_db }}' );"
-  loop: "{{ sites_config|dict2items }}"
+  loop: "{{ sites_config_install|dict2items }}"
 
-- name: Update Wordpress config file with value wp_mysql_user
+- name: Update Wordpress config file with value wp_mysql_user_install_install_install_install
   ansible.builtin.lineinfile:
     path: "/var/www/{{ item.value.http_host }}/wp-config.php"
     regexp: "define\\( 'DB_USER', '(.)+' \\);"
-    line: "define( 'DB_USER', '{{ item.value.wp_mysql_user }}' );"
-  loop: "{{ sites_config|dict2items }}"
+    line: "define( 'DB_USER', '{{ item.value.wp_mysql_user_install_install_install }}' );"
+  loop: "{{ sites_config_install|dict2items }}"
 
 - name: Update Wordpress config file with value wp_mysql_password
   ansible.builtin.lineinfile:
     path: "/var/www/{{ item.value.http_host }}/wp-config.php"
     regexp: "define\\( 'DB_PASSWORD', '(.)+' \\);"
     line: "define( 'DB_PASSWORD', '{{ item.value.wp_mysql_password }}' );"
-  loop: "{{ sites_config|dict2items }}"
+  loop: "{{ sites_config_install|dict2items }}"
 
 
 - name: Agregamos VirtualHost
@@ -84,12 +84,12 @@
     dest="/etc/apache2/sites-available/{{ item.value.http_conf }}"
     owner=root
     mode=0644
-  loop: "{{ sites_config|dict2items }}"
+  loop: "{{ sites_config_install|dict2items }}"
 
 - name: Habilitamos el nuevo sitio
   ansible.builtin.shell:
     cmd: "/usr/sbin/a2ensite {{ item.value.http_conf }}"
-  loop: "{{ sites_config|dict2items }}"
+  loop: "{{ sites_config_install|dict2items }}"
 
 - name: Deshabilitamos el sitio default
   ansible.builtin.shell:

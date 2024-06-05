@@ -6,15 +6,35 @@ root_directory: /var/www/
 web_user: www-data
 
 
-#Autigua variables, almacenada por si el metodo actual falla.
-#mariadb_root_password: probando1234
 
-#Variables MySQL
-# defaults file for mysql
-# Creamos Variables 
-#wp_mysql_db: dbestandarwp
+## MariaDB/MySql Vars:
+# After version 1.1.0 we will not set the root password, generally new systems do not set these passwords. For that reason we decided to follow the design flow of the operating system.
+# 
+# wp_mysql_db_install: "ExampleNameDb"
+# wp_mysql_user_install: "ExampleUser"
 
-##Las Siguientes variables se recomiendan crearlas en el entorno del host, para la variables wp_mysql_password recomendamos usar vault.
-#wp_mysql_user: usuariowp
-#wp_mysql_password: xxxxx
+##Procederemos a declarar diccionarios para configurar multiples instancias WordPress independientes
+##Es necesario mantener la siguiente estrucutra de variables y claves, aumentar el número del "siteN" según lo que necesites
+##Definir un secreto por clave en el Vault 
+# sites_config_install:
+#   site1:
+#     http_host: siteone
+#     http_fqdn: siteone.testdomain.com
+#     http_conf: siteone.conf
+#     wp_mysql_db: DataBSecuel992X
+#     wp_mysql_user: Scd-ksdSKDKl
+#     wp_mysql_password: LevantarDelVault
+    
+#   site2:
+#     http_host: sitetwo
+#     http_fqdn: sitetwo.testdomain2.com
+#     http_conf: sitetwo.conf
+#     wp_mysql_db: DataBSecuel992X2
+#     wp_mysql_user: Scd-ksdSKDKl2
+#     wp_mysql_password: LevantarDelVault2
 
+##If you need to override the following 2 variables, the first thing to do is comment them out and post them to a file under the host_vars directory
+
+http_port: "80"
+app_user: www-data
+adminwpcli: www-data

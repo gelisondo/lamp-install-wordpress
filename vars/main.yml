@@ -2,22 +2,17 @@
 
 #Define php version: 7.4 , 8.2
 
-##It is necessary to publish the following variables in a file under the host_vars directory, ex: 10_lamp.yml
-## Apache2 Vars:
-# http_host: "site-name"
-# http_fqdn: "www.site-name.example.com"
-# http_conf: "site-name.conf"
 
 ## MariaDB/MySql Vars:
 # After version 1.1.0 we will not set the root password, generally new systems do not set these passwords. For that reason we decided to follow the design flow of the operating system.
 # 
-# wp_mysql_db: "ExampleNameDb"
-# wp_mysql_user: "ExampleUser"
+# wp_mysql_db_install: "ExampleNameDb"
+# wp_mysql_user_install: "ExampleUser"
 
 ##Procederemos a declarar diccionarios para configurar multiples instancias WordPress independientes
 ##Es necesario mantener la siguiente estrucutra de variables y claves, aumentar el número del "siteN" según lo que necesites
 ##Definir un secreto por clave en el Vault 
-# sites_config:
+# sites_config_install:
 #   site1:
 #     http_host: siteone
 #     http_fqdn: siteone.testdomain.com
