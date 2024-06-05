@@ -20,7 +20,7 @@ Recommend to define this variables under the Ansible directories **host_vars**.
 
 ```
 #example
-sites_config:
+sites_config_install:
   site1:
     http_host: siteone
     http_fqdn: siteone.testdomain.com
@@ -73,7 +73,7 @@ app_user: www-data
 
 The following variables are used by the apache.conf.j2 template.
 
-Estraction to the dictionary **sites_config**.
+Estraction to the dictionary **sites_config_install**.
 ```
  item.value.http_host: "site-name"
  item.value.http_conf: "site-name.conf"
