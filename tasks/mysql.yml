@@ -18,7 +18,7 @@
     login_password: ""
     login_host: localhost
     login_unix_socket: /var/run/mysqld/mysqld.sock
-    name: "{{ item.value.wp_mysql_db_install }}"
+    name: "{{ item.value.wp_mysql_db }}"
     state: present
   become: yes
   loop: "{{ sites_config_install|dict2items }}"
@@ -30,9 +30,9 @@
     login_password: ""
     login_host: localhost
     login_unix_socket: /var/run/mysqld/mysqld.sock
-    name: "{{ item.value.wp_mysql_user_install }}"
+    name: "{{ item.value.wp_mysql_user }}"
     password: "{{ item.value.wp_mysql_password }}"
-    priv: '{{ item.value.wp_mysql_db_install }}.*:ALL,GRANT'
+    priv: '{{ item.value.wp_mysql_db }}.*:ALL,GRANT'
     state: present
   become: yes
   loop: "{{ sites_config_install|dict2items }}"
