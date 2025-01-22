@@ -15,7 +15,7 @@
   become: yes
   loop: "{{ sites_config_install|dict2items }}"
 
-  - name: Instalar Plugins de WordPress
+- name: Instalar Plugins de WordPress
   ansible.builtin.shell:
     cmd: "cd /var/www/{{ item.0.value.http_host }} && wp --allow-root plugin install {{ item.1 }} --activate"
   become: yes
