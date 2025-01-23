@@ -55,7 +55,7 @@ adminwpcli: www-data
 ##If you need to override the following 2 variables, the first thing to do is comment them out and post them to a file under the host_vars directory
 
 # #Lista de plugins para mantener la: Seguridad, SEO, Cache, Formularios, Email.
-# plugin_dict:
+# plugin_list:
 #   - akismet
 #   - advanced-google-recaptcha
 #   - wordfence
@@ -66,7 +66,7 @@ adminwpcli: www-data
 #   - wp-mail-smtp
 
 #Lista de plugins para mantener la: Seguridad, SEO, Cache, Formularios, Email.
-plugin_dict:
+plugin_list:
   - akismet
   - advanced-google-recaptcha
   - all-in-one-wp-security-and-firewall
