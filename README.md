@@ -10,7 +10,7 @@ Lists of differences in role versions:
 - v1.1.0  In this version we will not set the password for root user. By default the new systems are configured like this.
 - v1.2.0  In this version you will be able to define several sites that you need to install.
 
-## Listas de variables:
+## Vars list:
 
 In version v1.2.0 we use an Ansible dictionary to define the variables for the different sites. Following the same logic we can add the variable lists with the key "siteN".
 
@@ -28,6 +28,7 @@ sites_config_install:
     wp_mysql_db: DataBSecuel992X
     wp_mysql_user: Scd-ksdSKDKl
     wp_mysql_password: "{{ vault_wp_mysql_password_site1 }}"
+    bihind_proxy: true
     
   site2:
     http_host: sitetwo
@@ -36,6 +37,7 @@ sites_config_install:
     wp_mysql_db: DataBSecuel992X2
     wp_mysql_user: Scd-ksdSKDKl2
     wp_mysql_password: "{{ vault_wp_mysql_password_site2 }}"
+    bihind_proxy: true
 
   site3:
     http_host: sitethree
@@ -44,7 +46,11 @@ sites_config_install:
     wp_mysql_db: DataBSecuel992X23
     wp_mysql_user: Scd-ksdSKDKl23
     wp_mysql_password: "{{ vault_wp_mysql_password_site3 }}"
+    bihind_proxy: false
 ```
+
+Consider the infrastructure on which your WordPress sites will be installed, whether they will be directly exposed to the Internet or whether they will run behind a reverse proxy. To identify this, there is the bihind_proxy key, this can have two states: true or false.
+
 
 ## Define database password tu use wordpress, encrypted with vault
 
@@ -54,6 +60,7 @@ We recommend encrypting all passwords in the vault. so that they are not exposed
 vault_wp_mysql_password_site1: 'dkK999kLVKlsk3902948ws'
 vault_wp_mysql_password_site2: 'SKdlxkkExamplek9928lsk'
 vault_wp_mysql_password_site3: 'SK33kkExsamplek3333lsk'
+vault_wp_admin_password: '7xxxSxkdlSara'
 ``` 
 
 
@@ -100,6 +107,21 @@ wp_admin_email: "email-example@example.io"
 ```
 
 All these variables are necessary for the role to finish configuring the site and leaving it in production.
+
+# List of Plugins: 
+
+We create a list to define the plugins that will be installed and activated on each website. For this it will be necessary to define the list **plugin_list**.
+
+```
+#Plugin List: Security, SEO, Cache, Forms, Email.
+plugin_list:
+  - akismet
+  - advanced-google-recaptcha
+  - all-in-one-wp-security-and-firewall
+  - all-in-one-seo-pack
+  - wp-super-cache
+```
+
 
 ## Not set the root password:
 

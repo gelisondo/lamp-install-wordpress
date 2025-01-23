@@ -54,6 +54,26 @@
     force: no # Si el archivo ya existe, no lo sobre escribe !! hevita borrar la configuración existente
   loop: "{{ sites_config_install|dict2items }}"
 
+
+- name: Agregamos Código php para configurar wordpres detras de un reverse proxy
+  ansible.builtin.blockinfile:
+    insertafter: "<?php"
+    path: "/var/www/{{ item.value.http_host }}/wp-config.php"
+    block: |
+      define('FORCE_SSL_ADMIN', true);
+      define('WP_HOME','https://{{ item.value.http_fqdn }}');
+      define('WP_SITEURL','https://{{ item.value.http_fqdn }}');
+
+      define('WP_DEBUG', '/var/log/apache2/error.log');
+      define( 'WP_DEBUG_DISPLAY', false );
+
+      if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+              $_SERVER['HTTPS'] = 'on';
+      }
+  when: item.value.bihind_proxy == true
+  loop: "{{ sites_config_install|dict2items }}"
+
+
 # Esta sección si sobre escribe el contenido, pero si las variables no cambian no hay problema que los sitios se rompan.
 - name: Update Wordpress config file with value wp_mysql_db
   ansible.builtin.lineinfile:
@@ -66,7 +86,7 @@
   ansible.builtin.lineinfile:
     path: "/var/www/{{ item.value.http_host }}/wp-config.php"
     regexp: "define\\( 'DB_USER', '(.)+' \\);"
-    line: "define( 'DB_USER', '{{ item.value.wp_mysql_user_install_install_install }}' );"
+    line: "define( 'DB_USER', '{{ item.value.wp_mysql_user }}' );"
   loop: "{{ sites_config_install|dict2items }}"
 
 - name: Update Wordpress config file with value wp_mysql_password

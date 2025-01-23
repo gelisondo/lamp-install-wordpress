@@ -33,7 +33,7 @@ adminwpcli: www-data
 ##Procederemos a declarar diccionarios para configurar multiples instancias WordPress independientes
 ##Es necesario mantener la siguiente estrucutra de variables y claves, aumentar el número del "siteN" según lo que necesites
 ##Definir un secreto por clave en el Vault 
-# sites_config:
+# sites_config_install:
 #   site1:
 #     http_host: siteone
 #     http_fqdn: siteone.testdomain.com
@@ -41,6 +41,7 @@ adminwpcli: www-data
 #     wp_mysql_db: DataBSecuel992X
 #     wp_mysql_user: Scd-ksdSKDKl
 #     wp_mysql_password: LevantarDelVault
+#     bihind_proxy: false
     
 #   site2:
 #     http_host: sitetwo
@@ -49,6 +50,7 @@ adminwpcli: www-data
 #     wp_mysql_db: DataBSecuel992X2
 #     wp_mysql_user: Scd-ksdSKDKl2
 #     wp_mysql_password: LevantarDelVault2
+#     bihind_proxy: true
 
 ##If you need to override the following 2 variables, the first thing to do is comment them out and post them to a file under the host_vars directory
 
