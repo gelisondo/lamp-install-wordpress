@@ -59,6 +59,7 @@ adminwpcli: www-data
 #   - akismet
 #   - advanced-google-recaptcha
 #   - wordfence
+
 #   - all-in-one-wp-security-and-firewall
 #   - all-in-one-seo-pack
 #   - wp-super-cache
