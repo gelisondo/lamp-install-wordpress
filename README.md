@@ -29,6 +29,9 @@ sites_config_install:
     wp_mysql_user: Scd-ksdSKDKl
     wp_mysql_password: "{{ vault_wp_mysql_password_site1 }}"
     bihind_proxy: true
+    wp_admin_user: AdminSitio1
+    wp_admin_password: "{{ vault_wp_admin_password_site1 }}"
+    wp_admin_email: "webmaster@testdomain.com"
     
   site2:
     http_host: sitetwo
@@ -38,6 +41,9 @@ sites_config_install:
     wp_mysql_user: Scd-ksdSKDKl2
     wp_mysql_password: "{{ vault_wp_mysql_password_site2 }}"
     bihind_proxy: true
+    wp_admin_user: AdminSitio2
+    wp_admin_password: "{{ vault_wp_admin_password_site2 }}"
+    wp_admin_email: "webmaster@testdomain2.com"
 
   site3:
     http_host: sitethree
@@ -47,10 +53,15 @@ sites_config_install:
     wp_mysql_user: Scd-ksdSKDKl23
     wp_mysql_password: "{{ vault_wp_mysql_password_site3 }}"
     bihind_proxy: false
+    wp_admin_user: AdminSitio3
+    wp_admin_password: "{{ vault_wp_admin_password_site3 }}"
+    wp_admin_email: "webmaster3@testdomain.com"    
 ```
 
 Consider the infrastructure on which your WordPress sites will be installed, whether they will be directly exposed to the Internet or whether they will run behind a reverse proxy. To identify this, there is the bihind_proxy key, this can have two states: true or false.
 
+We added the WordPress administrator of each site as well as their password and email.
+In this way each site is configured independently, improving security.
 
 ## Define database password tu use wordpress, encrypted with vault
 
@@ -60,7 +71,11 @@ We recommend encrypting all passwords in the vault. so that they are not exposed
 vault_wp_mysql_password_site1: 'dkK999kLVKlsk3902948ws'
 vault_wp_mysql_password_site2: 'SKdlxkkExamplek9928lsk'
 vault_wp_mysql_password_site3: 'SK33kkExsamplek3333lsk'
-vault_wp_admin_password: '7xxxSxkdlSara'
+
+vault_wp_admin_password_site1: 'SK33kkExsamplek332w2k'
+vault_wp_admin_password_site2: 'SK33kkE90f09lsk'
+vault_wp_admin_password_site3: 'SKdlxkkExam56ek9999lsk'
+
 ``` 
 
 
@@ -101,12 +116,11 @@ I recomment to use a file with the name **host_var/server-hostname/vars/10_LAMP_
 ```
 #Admin WP with wp-cli
 adminwpcli: "userAdminName"
-wp_admin_user: "userAdministrator"
-wp_admin_password: "{{ vault_wp_admin_password }}"
-wp_admin_email: "email-example@example.io"
 ```
 
 All these variables are necessary for the role to finish configuring the site and leaving it in production.
+
+
 
 # List of Plugins: 
 
