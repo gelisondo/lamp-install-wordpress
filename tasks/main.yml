@@ -1,5 +1,10 @@
 ---
 
+- tasks:
+  - name: verificar variables cargadas
+    debug:
+      var: sites_config_install
+
 - import_tasks:  systemconfig.yml
   tags:
     - inst-systemconfig
