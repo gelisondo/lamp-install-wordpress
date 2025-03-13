@@ -19,6 +19,6 @@
   ansible.builtin.shell:
     cmd: "cd /var/www/{{ item.0.value.http_host }} && wp --allow-root plugin install {{ item.1 }} --activate"
   become: yes
-  loop: "{{ lookup('cartesian', sites_config_install|dict2items, plugin_dict) }}"
+  loop: "{{ lookup('cartesian', sites_config_install|dict2items, plugin_list) }}"
   loop_control:
     loop_var: item
