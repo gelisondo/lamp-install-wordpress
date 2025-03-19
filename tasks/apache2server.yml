@@ -46,29 +46,26 @@
   loop: "{{ sites_config_install|dict2items }}"
 
 
-- name: Copy confing file wp-config-sample.php to production
-  ansible.builtin.copy:
-    src: "/var/www/{{ item.value.http_host }}/wp-config-sample.php"
-    dest: "/var/www/{{ item.value.http_host }}/wp-config.php"
-    remote_src: yes
-    force: no # Si el archivo ya existe, no lo sobre escribe !! hevita borrar la configuración existente
+- name: Check and comment WP_DEBUG in wp-config.php if exists
+  ansible.builtin.lineinfile:
+    path: "/var/www/{{ item.value.http_host }}/wp-config.php"
+    regexp: "define\\( 'WP_DEBUG', false \\);"
+    line: "/* define( 'WP_DEBUG', false ); */"
   loop: "{{ sites_config_install|dict2items }}"
-
 
 - name: Agregamos Código php para configurar wordpres detras de un reverse proxy
   ansible.builtin.blockinfile:
     insertafter: "<?php"
     path: "/var/www/{{ item.value.http_host }}/wp-config.php"
     block: |
-      define('FORCE_SSL_ADMIN', true);
+
       define('WP_HOME','https://{{ item.value.http_fqdn }}');
       define('WP_SITEURL','https://{{ item.value.http_fqdn }}');
 
-      define('WP_DEBUG', '/var/log/apache2/error.log');
-      define( 'WP_DEBUG_DISPLAY', false );
-
       if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
               $_SERVER['HTTPS'] = 'on';
+              $_SERVER['SERVER_PORT'] = 443;
+              $_SERVER['REQUEST_SCHEME'] = 'https';
       }
   when: item.value.bihind_proxy == true
   loop: "{{ sites_config_install|dict2items }}"
