@@ -29,4 +29,9 @@
     - inst-wp-cli
     - lamp-install-wp
 
+- import_tasks: force-ssl-rproxy.yml
+  tags:
+    - lamp-install-wp
+    - force-ssl
+
 ...

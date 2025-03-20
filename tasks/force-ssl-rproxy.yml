@@ -1,0 +1,41 @@
+
+- name: Crete directory for mu-plugins
+  ansible.builtin.file:
+    path: "/var/www/{{ item.value.http_host }}/wp-content/mu-plugins"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: u=rwX,g=rwX,o=rwX
+  when: item.value.bihind_proxy == true
+  loop: "{{ sites_config_install|dict2items }}"
+
+- name: Template for mu-plugins verify http and https
+  template:
+    src: force-https-urls.php.j2
+    dest: "/var/www/{{ item.value.http_host }}/wp-content/mu-plugins/force-https-urls.php"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: u=rwX,g=rwX,o=rwX
+  when: item.value.bihind_proxy == true
+  loop: "{{ sites_config_install|dict2items }}"
+
+- name: Agregamos Código php para configurar wordpres detras de un reverse proxy
+  ansible.builtin.blockinfile:
+    insertafter: "<?php"
+    path: "/var/www/{{ item.value.http_host }}/wp-config.php"
+    marker: "// {mark} Added by Ansible"
+    block: |
+
+      define('WP_HOME','https://{{ item.value.http_fqdn }}');
+      define('WP_SITEURL','https://{{ item.value.http_fqdn }}');
+
+      if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+              $_SERVER['HTTPS'] = 'on';
+              $_SERVER['SERVER_PORT'] = 443;
+              $_SERVER['REQUEST_SCHEME'] = 'https';
+      }
+  when: item.value.bihind_proxy == true
+  loop: "{{ sites_config_install|dict2items }}"
+
+  notify:
+    - restart apache2
