@@ -1,0 +1,46 @@
+<?php
+/*
+ * Plugin Name: Force HTTPS URLs behind Reverse Proxy (Extended)
+ * Description: Corrige URLs absolutas http en frontend y admin cuando WordPress está detrás de un Reverse Proxy terminando SSL.
+ * Version: 1.1
+ */
+
+// Activar solo cuando detecta HTTPS real o tras proxy
+if (is_ssl() || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
+
+    // Forzar esquema en scripts y styles
+    add_filter('script_loader_src', 'force_https_scheme', 10, 1);
+    add_filter('style_loader_src', 'force_https_scheme', 10, 1);
+
+    // Forzar esquema en uploads/media
+    add_filter('upload_dir', 'force_https_uploads', 10, 1);
+
+    // Forzar esquema en URLs base
+    add_filter('site_url', 'force_https_scheme', 10, 3);
+    add_filter('home_url', 'force_https_scheme', 10, 3);
+    add_filter('admin_url', 'force_https_scheme', 10, 3);
+    add_filter('network_site_url', 'force_https_scheme', 10, 3);
+    add_filter('network_home_url', 'force_https_scheme', 10, 3);
+    add_filter('content_url', 'force_https_scheme', 10, 1);
+    add_filter('includes_url', 'force_https_scheme', 10, 1);
+    add_filter('plugins_url', 'force_https_scheme', 10, 2);
+    add_filter('rest_url', 'force_https_scheme', 10, 2);
+
+}
+
+// Función genérica para forzar https
+function force_https_scheme($url) {
+    if (strpos($url, 'http://') === 0) {
+        $url = preg_replace('/^http:/i', 'https:', $url);
+    }
+    return $url;
+}
+
+// Uploads
+function force_https_uploads($upload) {
+    if (isset($upload['baseurl']) && strpos($upload['baseurl'], 'http://') === 0) {
+        $upload['baseurl'] = preg_replace('/^http:/i', 'https:', $upload['baseurl']);
+    }
+    return $upload;
+}
+?>
