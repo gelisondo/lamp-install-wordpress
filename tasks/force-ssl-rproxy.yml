@@ -1,29 +1,41 @@
 
-- name: Crete directory for mu-plugins
-  ansible.builtin.file:
-    path: "/var/www/{{ item.value.http_host }}/wp-content/mu-plugins"
-    state: directory
-    owner: "{{ app_user }}"
-    group: "{{ app_user }}"
-    mode: u=rwX,g=rwX,o=rwX
-  when: item.value.bihind_proxy == true
-  loop: "{{ sites_config_install|dict2items }}"
+# - name: Crete directory for mu-plugins
+#   ansible.builtin.file:
+#     path: "/var/www/{{ item.value.http_host }}/wp-content/mu-plugins"
+#     state: directory
+#     owner: "{{ app_user }}"
+#     group: "{{ app_user }}"
+#     mode: u=rwX,g=rwX,o=rwX
+#   when: item.value.bihind_proxy == true
+#   loop: "{{ sites_config_install|dict2items }}"
 
-- name: Template for mu-plugins verify http and https
-  template:
-    src: force-https-urls.php.j2
-    dest: "/var/www/{{ item.value.http_host }}/wp-content/mu-plugins/force-https-urls.php"
-    owner: "{{ app_user }}"
-    group: "{{ app_user }}"
-    mode: u=rwX,g=rwX,o=rwX
+# - name: Template for mu-plugins verify http and https
+#   template:
+#     src: force-https-urls.php.j2
+#     dest: "/var/www/{{ item.value.http_host }}/wp-content/mu-plugins/force-https-urls.php"
+#     owner: "{{ app_user }}"
+#     group: "{{ app_user }}"
+#     mode: u=rwX,g=rwX,o=rwX
+#   when: item.value.bihind_proxy == true
+#   loop: "{{ sites_config_install|dict2items }}"
+
+- name: Insertar salto de línea y bandera en wp-config.php
+  ansible.builtin.shell: |
+    # Insertar salto de línea después de <?php
+    sed -i '1 a\ ' "/var/www/{{ item.value.http_host }}/wp-config.php"
+    # Insertar bandera como comentario PHP
+    sed -i '2 a\ // endforcessl' "/var/www/{{ item.value.http_host }}/wp-config.php"
+  args:
+    executable: /bin/bash
+
   when: item.value.bihind_proxy == true
   loop: "{{ sites_config_install|dict2items }}"
 
 - name: Agregamos Código php para configurar wordpres detras de un reverse proxy
   ansible.builtin.blockinfile:
-    insertafter: "<?php"
     path: "/var/www/{{ item.value.http_host }}/wp-config.php"
     marker: "// {mark} Added by Ansible"
+    insertafter: "// endforcessl"
     block: |
 
       define('WP_HOME','https://{{ item.value.http_fqdn }}');
