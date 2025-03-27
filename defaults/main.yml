@@ -73,8 +73,4 @@ adminwpcli: www-data
 
 #Lista de plugins para mantener la: Seguridad, SEO, Cache, Formularios, Email.
 plugin_list:
-  - akismet
   - advanced-google-recaptcha
-  - all-in-one-wp-security-and-firewall
-  - all-in-one-seo-pack
-  - wp-super-cache

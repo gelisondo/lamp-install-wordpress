@@ -22,3 +22,14 @@
   loop: "{{ lookup('cartesian', sites_config_install|dict2items, plugin_list) }}"
   loop_control:
     loop_var: item
+
+- name: Change the owner an permisions on New Plugins
+  ansible.builtin.file:
+    dest: "/var/www/{{ item.value.http_host }}/wp-content"
+    state: directory
+    recurse: true
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    #Set directories to 755 and files to 644
+    mode: u=rwX,g=rX,o=rX
+  loop: "{{ sites_config_install|dict2items }}"
