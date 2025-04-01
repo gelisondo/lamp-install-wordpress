@@ -6,18 +6,20 @@
     url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
     dest: /usr/local/bin/wp
     owner: "{{ adminwpcli }}"
-    group: "www-data"
+    group: "{{ app_group }}"
     mode: '0750'
 
 - name: Instalar wordpress y crea la configuración inicial desde wp-cli
   ansible.builtin.shell:
-    cmd: "cd /var/www/{{ item.value.http_host }} && wp --allow-root core install --url={{ item.value.http_fqdn }} --title={{ item.value.http_host }} --admin_user={{ item.value.wp_admin_user }} --admin_password={{ item.value.wp_admin_password }} --admin_email={{ item.value.wp_admin_email }}"
+    cmd: "cd /var/www/{{ item.value.http_host }} && wp core install --url={{ item.value.http_fqdn }} --title={{ item.value.http_host }} --admin_user={{ item.value.wp_admin_user }} --admin_password={{ item.value.wp_admin_password }} --admin_email={{ item.value.wp_admin_email }}"
+  become_user: "{{ adminwpcli }}"
   become: yes
   loop: "{{ sites_config_install|dict2items }}"
 
 - name: Instalar Plugins de WordPress
   ansible.builtin.shell:
-    cmd: "cd /var/www/{{ item.0.value.http_host }} && wp --allow-root plugin install {{ item.1 }} --activate"
+    cmd: "cd /var/www/{{ item.0.value.http_host }} && wp plugin install {{ item.1 }} --activate"
+  become_user: "{{ adminwpcli }}"
   become: yes
   loop: "{{ lookup('cartesian', sites_config_install|dict2items, plugin_list) }}"
   loop_control:
@@ -29,7 +31,7 @@
     state: directory
     recurse: true
     owner: "{{ app_user }}"
-    group: "{{ app_user }}"
+    group: "{{ app_group }}"
     #Set directories to 755 and files to 644
     mode: u=rwX,g=rX,o=rX
   loop: "{{ sites_config_install|dict2items }}"

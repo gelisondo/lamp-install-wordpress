@@ -32,8 +32,11 @@
 ##If you need to override the following 2 variables, the first thing to do is comment them out and post them to a file under the host_vars directory
 
 http_port: "80"
-app_user: www-data
-adminwpcli: www-data
+
+adminwpcli: adminwpcli
+app_user: "{{ adminwpcli }}"
+app_group: www-data
+
 
 
 apache2:

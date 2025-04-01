@@ -16,12 +16,24 @@
 - name: Asegurarse de que apache2 esté corriendo y habilitado al inicio.
   service: name=apache2 state=started enabled=yes
 
+#Se lo agrega al grupo www-data para ser compatible con apache2
+- name: Crear el usuario adminwpcli en el sistema
+  ansible.builtin.user:
+    name: "{{ adminwpcli }}"
+    comment: "Usuario para administrar WP"
+    shell: /bin/bash
+    home: /home/{{ adminwpcli }}
+    create_home: yes
+    state: present
+    groups: "{{ app_user }}"
+
+
 - name: Descargamos y Descomprimimos la ultima version de wordpress para crear la raiz.
   ansible.builtin.unarchive:
     src: https://wordpress.org/latest.tar.gz
     dest: /tmp
     remote_src: yes
-    group: "{{ app_user }}"
+    group: "{{ app_group }}"
     owner: "{{ app_user }}"
   
 - name: Copy WordPress latest Version to new Site
@@ -49,7 +61,7 @@
     state: directory
     recurse: true
     owner: "{{ app_user }}"
-    group: "{{ app_user }}"
+    group: "{{ app_group }}"
     #Set directories to 755 and files to 644
     mode: u=rwX,g=rX,o=rX
   loop: "{{ sites_config_install|dict2items }}"
@@ -84,6 +96,18 @@
     line: "define( 'DB_PASSWORD', '{{ item.value.wp_mysql_password }}' );"
   loop: "{{ sites_config_install|dict2items }}"
 
+
+- name: Agregamos htaccess en el directorio Uploads para bloquear ejecución de PHP
+  ansible.builtin.copy:
+    dest: "/var/www/{{ item.value.http_host }}/wp-content/uploads/.htaccess"
+    content: |
+      # Bloquear ejecución de archivos PHP en el directorio uploads
+      <FilesMatch "\.php$">
+        deny from all
+      </FilesMatch>
+  loop: "{{ sites_config_install|dict2items }}"
+
+  
 
 - name: Agregamos VirtualHost
   #Agrega los virtual Host Necesarios bansandoce en el template template/apache.conf.j2 y lo deja en /etc/apache2/site-available/default
