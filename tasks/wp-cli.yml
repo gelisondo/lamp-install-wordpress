@@ -9,29 +9,99 @@
     group: "{{ app_group }}"
     mode: '0750'
 
-- name: Instalar wordpress y crea la configuración inicial desde wp-cli
+- name: Instalar WordPress y crear la configuración inicial desde wp-cli
   ansible.builtin.shell:
-    cmd: "cd /var/www/{{ item.value.http_host }} && wp core install --url={{ item.value.http_fqdn }} --title={{ item.value.http_host }} --admin_user={{ item.value.wp_admin_user }} --admin_password={{ item.value.wp_admin_password }} --admin_email={{ item.value.wp_admin_email }}"
-  become_user: "{{ adminwpcli }}"
+    cmd: >
+      su {{ adminwpcli }} -c 
+      "bash -c 'cd /var/www/{{ item.value.http_host }} && 
+      wp core install --url={{ item.value.http_fqdn }} 
+      --title={{ item.value.http_host }} 
+      --admin_user={{ item.value.wp_admin_user }} 
+      --admin_password={{ item.value.wp_admin_password }} 
+      --admin_email={{ item.value.wp_admin_email }}'"
   become: yes
-  loop: "{{ sites_config_install|dict2items }}"
+  loop: "{{ sites_config_install | dict2items }}"
 
 - name: Instalar Plugins de WordPress
   ansible.builtin.shell:
-    cmd: "cd /var/www/{{ item.0.value.http_host }} && wp plugin install {{ item.1 }} --activate"
-  become_user: "{{ adminwpcli }}"
+    cmd: >
+     su {{ adminwpcli }} -c
+     "bash -c 'cd /var/www/{{ item.0.value.http_host }} &&
+     wp plugin install {{ item.1 }} --activate'"
   become: yes
   loop: "{{ lookup('cartesian', sites_config_install|dict2items, plugin_list) }}"
   loop_control:
     loop_var: item
 
-- name: Change the owner an permisions on New Plugins
+#Cambiamos los permisos generales del sistio para que los administradores desde la interfaz web no tengan problemas
+- name: Change the owner an permisions
   ansible.builtin.file:
-    dest: "/var/www/{{ item.value.http_host }}/wp-content"
+    dest: "/var/www/{{ item.value.http_host }}"
     state: directory
     recurse: true
-    owner: "{{ app_user }}"
+    owner: "{{ app_group }}"
     group: "{{ app_group }}"
     #Set directories to 755 and files to 644
     mode: u=rwX,g=rX,o=rX
+  loop: "{{ sites_config_install|dict2items }}"
+
+#Cambiamos los permisos del direcotorio plugins solo para que lo pueda escribir el usuario adminwpcli
+- name: Change the owner an permisions on New Plugins
+  ansible.builtin.file:
+    dest: "/var/www/{{ item.value.http_host }}/wp-content/plugins"
+    state: directory
+    recurse: true
+    owner: "{{ adminwpcli }}"
+    group: "{{ app_group }}"
+    #Set directories to 755 and files to 644
+    mode: u=rwX,g=rX,o=rX
+  loop: "{{ sites_config_install|dict2items }}"
+
+#Cambiamos los permisos del direcotorio plugins/opdate solo para que lo pueda escribir el usuario adminwpcli
+- name: Change the owner an permisions on New Plugins and Update
+  ansible.builtin.file:
+    dest: "/var/www/{{ item.value.http_host }}/wp-content/upgrade"
+    state: directory
+    recurse: true
+    owner: "{{ adminwpcli }}"
+    group: "{{ app_group }}"
+    #Set directories to 755 and files to 644
+    mode: u=rwX,g=rX,o=rX
+  loop: "{{ sites_config_install|dict2items }}"
+
+#Cambiamos los permisos del direcotorio plugins/opdate/upgrade-temp-backup solo para que lo pueda escribir el usuario adminwpcli
+- name: Change the owner an permisions on New Plugins and Update temp backup
+  ansible.builtin.file:
+    dest: "/var/www/{{ item.value.http_host }}/wp-content/upgrade-temp-backup"
+    state: directory
+    recurse: true
+    owner: "{{ adminwpcli }}"
+    group: "{{ app_group }}"
+    #Set directories to 755 and files to 644
+    mode: u=rwX,g=rX,o=rX
+  loop: "{{ sites_config_install|dict2items }}"
+
+#Cambiamos los permisos del direcotorio themes solo para que lo pueda escribir el usuario adminwpcli
+- name: Change the owner an permisions on New themes
+  ansible.builtin.file:
+    dest: "/var/www/{{ item.value.http_host }}/wp-content/themes"
+    state: directory
+    recurse: true
+    owner: "{{ adminwpcli }}"
+    group: "{{ app_group }}"
+    #Set directories to 755 and files to 644
+    mode: u=rwX,g=rX,o=rX
+  loop: "{{ sites_config_install|dict2items }}"
+
+
+- name: Agregamos htaccess en el directorio Uploads para bloquear ejecución de PHP
+  ansible.builtin.copy:
+    dest: "/var/www/{{ item.value.http_host }}/wp-content/uploads/.htaccess"
+    content: |
+      # Bloquear ejecución de archivos PHP en el directorio uploads
+      <FilesMatch "\.php$">
+        deny from all
+      </FilesMatch>
+    owner: "{{ app_group }}"
+    group: "{{ app_group }}"
   loop: "{{ sites_config_install|dict2items }}"

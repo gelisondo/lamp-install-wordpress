@@ -98,18 +98,6 @@
   loop: "{{ sites_config_install|dict2items }}"
 
 
-- name: Agregamos htaccess en el directorio Uploads para bloquear ejecución de PHP
-  ansible.builtin.copy:
-    dest: "/var/www/{{ item.value.http_host }}/wp-content/uploads/.htaccess"
-    content: |
-      # Bloquear ejecución de archivos PHP en el directorio uploads
-      <FilesMatch "\.php$">
-        deny from all
-      </FilesMatch>
-    owner: "{{ app_user }}"
-    group: "{{ app_group }}"
-  loop: "{{ sites_config_install|dict2items }}"
-
 - name: Agregamos VirtualHost
   #Agrega los virtual Host Necesarios bansandoce en el template template/apache.conf.j2 y lo deja en /etc/apache2/site-available/default
   template:
